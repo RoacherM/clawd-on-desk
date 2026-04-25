@@ -3,12 +3,12 @@ const assert = require("node:assert");
 const registry = require("../agents/registry");
 
 describe("Agent Registry", () => {
-  it("should return all seven agents", () => {
+  it("should return all registered agents", () => {
     const agents = registry.getAllAgents();
     // Keep legacy count assertions stable while allowing Kimi to be added.
     const kimiIdx = agents.findIndex((a) => a.id === "kimi-cli");
     if (kimiIdx >= 0) agents.splice(kimiIdx, 1);
-    assert.strictEqual(agents.length, 8);
+    assert.strictEqual(agents.length, 9);
     const ids = agents.map((a) => a.id);
     assert.ok(ids.includes("claude-code"));
     assert.ok(ids.includes("codex"));
@@ -18,6 +18,7 @@ describe("Agent Registry", () => {
     assert.ok(ids.includes("codebuddy"));
     assert.ok(ids.includes("kiro-cli"));
     assert.ok(ids.includes("opencode"));
+    assert.ok(ids.includes("openclaw"));
   });
 
   it("should look up agents by ID", () => {
@@ -28,6 +29,7 @@ describe("Agent Registry", () => {
     assert.strictEqual(registry.getAgent("cursor-agent").name, "Cursor Agent");
     assert.strictEqual(registry.getAgent("codebuddy").name, "CodeBuddy");
     assert.strictEqual(registry.getAgent("kiro-cli").name, "Kiro CLI");
+    assert.strictEqual(registry.getAgent("openclaw").name, "OpenClaw");
     assert.strictEqual(registry.getAgent("nonexistent"), undefined);
   });
 
@@ -68,6 +70,9 @@ describe("Agent Registry", () => {
 
     const kiro = registry.getAgent("kiro-cli");
     assert.deepStrictEqual(kiro.processNames.linux, ["kiro-cli"]);
+
+    const openclaw = registry.getAgent("openclaw");
+    assert.deepStrictEqual(openclaw.processNames.linux, ["openclaw"]);
   });
 
   it("should keep Kiro CLI process names narrowed to kiro-cli only", () => {
@@ -89,6 +94,7 @@ describe("Agent Registry", () => {
     assert.ok(agentIds.includes("gemini-cli"));
     assert.ok(agentIds.includes("cursor-agent"));
     assert.ok(agentIds.includes("kiro-cli"));
+    assert.ok(agentIds.includes("openclaw"));
   });
 
   it("should have correct capabilities", () => {
@@ -127,6 +133,12 @@ describe("Agent Registry", () => {
     assert.strictEqual(kiro.capabilities.permissionApproval, false);
     assert.strictEqual(kiro.capabilities.sessionEnd, false);
     assert.strictEqual(kiro.capabilities.subagent, false);
+
+    const openclaw = registry.getAgent("openclaw");
+    assert.strictEqual(openclaw.capabilities.httpHook, false);
+    assert.strictEqual(openclaw.capabilities.permissionApproval, false);
+    assert.strictEqual(openclaw.capabilities.sessionEnd, true);
+    assert.strictEqual(openclaw.capabilities.subagent, true);
   });
 
   it("should have eventMap for hook-based agents", () => {
@@ -150,6 +162,12 @@ describe("Agent Registry", () => {
     assert.strictEqual(cursor.eventMap.preToolUse, "working");
     assert.strictEqual(cursor.eventMap.afterAgentThought, "thinking");
     assert.strictEqual(cursor.eventMap.stop, "attention");
+
+    const openclaw = registry.getAgent("openclaw");
+    assert.strictEqual(openclaw.eventMap.SessionStart, "idle");
+    assert.strictEqual(openclaw.eventMap.UserPromptSubmit, "thinking");
+    assert.strictEqual(openclaw.eventMap.PreToolUse, "working");
+    assert.strictEqual(openclaw.eventMap.Stop, "attention");
   });
 
   it("should have logEventMap for poll-based agents", () => {

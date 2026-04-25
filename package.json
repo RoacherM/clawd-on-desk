@@ -16,7 +16,8 @@
     "install:gemini-hooks": "node hooks/gemini-install.js",
     "install:cursor-hooks": "node hooks/cursor-install.js",
     "install:kiro-hooks": "node hooks/kiro-install.js",
-    "install:kimi-hooks": "node hooks/kimi-install.js"
+    "install:kimi-hooks": "node hooks/kimi-install.js",
+    "install:openclaw-plugin": "node hooks/openclaw-install.js"
   },
   "keywords": [
     "clawd",

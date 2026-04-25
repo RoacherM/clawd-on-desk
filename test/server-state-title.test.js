@@ -72,6 +72,7 @@ function makeCtx(overrides = {}) {
     syncCodeBuddyHooksImpl: () => {},
     syncKiroHooksImpl: () => {},
     syncOpencodePluginImpl: () => {},
+    syncOpenClawPluginImpl: () => {},
 
     // /state handler deps
     STATE_SVGS: {

@@ -1,0 +1,10 @@
+{
+  "id": "clawd-openclaw",
+  "name": "Clawd on Desk",
+  "description": "Reports OpenClaw agent lifecycle events to the Clawd desktop pet.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

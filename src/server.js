@@ -411,6 +411,19 @@ function syncOpencodePlugin() {
   }
 }
 
+function syncOpenClawPlugin() {
+  try {
+    if (typeof ctx.syncOpenClawPluginImpl === "function") return ctx.syncOpenClawPluginImpl();
+    const { registerOpenClawPlugin } = require("../hooks/openclaw-install.js");
+    const { installed, configChanged } = registerOpenClawPlugin({ silent: true });
+    if (installed && configChanged) {
+      console.log("Clawd: synced OpenClaw plugin");
+    }
+  } catch (err) {
+    console.warn("Clawd: failed to sync OpenClaw plugin:", err.message);
+  }
+}
+
 function sendStateHealthResponse(res) {
   const body = JSON.stringify({ ok: true, app: CLAWD_SERVER_ID, port: getHookServerPort() });
   res.writeHead(200, {
@@ -887,7 +900,7 @@ function startHttpServer() {
     console.log(`Clawd state server listening on 127.0.0.1:${activeServerPort}`);
     // Defer hook/plugin registration off the startup path. Each sync call
     // reads+parses+writes a config JSON (50-150ms cumulative on slow disks),
-    // and all five operate on independent files for independent agents, so
+    // and these calls operate on independent files for independent agents, so
     // none of them need to block the HTTP server from accepting traffic.
     setImmediateFn(() => {
       if (shouldManageClaudeHooks()) {
@@ -900,6 +913,7 @@ function startHttpServer() {
       syncKiroHooks();
       syncKimiHooks();
       syncOpencodePlugin();
+      syncOpenClawPlugin();
     });
   });
 
@@ -922,6 +936,7 @@ return {
   syncKiroHooks,
   syncKimiHooks,
   syncOpencodePlugin,
+  syncOpenClawPlugin,
   startClaudeSettingsWatcher,
   stopClaudeSettingsWatcher,
   cleanup,

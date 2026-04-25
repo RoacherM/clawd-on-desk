@@ -68,6 +68,7 @@ function makeCtx(overrides = {}) {
     syncCodeBuddyHooksImpl: () => {},
     syncKiroHooksImpl: () => {},
     syncOpencodePluginImpl: () => {},
+    syncOpenClawPluginImpl: () => {},
     STATE_SVGS: {
       working: "x.svg",
       error: "x.svg",

@@ -38,6 +38,19 @@ Kimi Code CLI（Kimi-CLI）现已采用 hook-only 集成（`~/.kimi/config.toml`
 | PostCompact | attention |
 | Notification | notification |
 
+## Hermes Hook 事件
+
+Hermes 使用 `~/.hermes/config.yaml` 中的 shell hooks；Clawd 将核心生命周期事件映射到共享状态：
+
+| Hermes Hook Event | 状态 |
+|---|---|
+| on_session_start | idle |
+| on_session_end | sleeping |
+| pre_llm_call | thinking |
+| post_llm_call | attention |
+| pre_tool_call | working |
+| post_tool_call | working |
+
 ## 极简模式
 
 拖到屏幕右边缘（或右键 →"极简模式"）进入——半身露出在屏幕边缘，悬停时探出来。

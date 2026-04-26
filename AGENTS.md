@@ -4,7 +4,7 @@ This file is the entry point for coding agents working in this repository. Keep 
 
 ## Project Overview
 
-Clawd 是一个 Electron 桌宠：通过 hook、日志轮询和 plugin 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Cursor Agent、Gemini CLI、Kiro CLI、CodeBuddy、opencode；内置 Clawd / Calico 两套主题，支持用户主题；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / ko。
+Clawd 是一个 Electron 桌宠：通过 hook、日志轮询和 plugin 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Cursor Agent、Gemini CLI、Kiro CLI、Kimi CLI、Hermes、CodeBuddy、opencode、OpenClaw；内置 Clawd / Calico 两套主题，支持用户主题；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / ko。
 
 ## Common Commands
 
@@ -23,8 +23,11 @@ npm run uninstall:claude-hooks
 npm run install:cursor-hooks
 npm run install:gemini-hooks
 npm run install:kiro-hooks
+npm run install:kimi-hooks
+npm run install:hermes-hooks
 node hooks/codebuddy-install.js
 node hooks/opencode-install.js
+node hooks/openclaw-install.js
 
 bash scripts/remote-deploy.sh user@host
 bash test-demo.sh [seconds]
@@ -33,7 +36,7 @@ bash test-macos.sh
 bash test-oneshot-gate.sh [state] [seconds]
 ```
 
-正常启动时，Clawd 会自动同步 Claude / Gemini / Cursor / CodeBuddy / Kiro hooks 和 opencode plugin。手动安装命令主要用于调试、重装或远程部署。
+正常启动时，Clawd 会自动同步 Claude / Gemini / Cursor / CodeBuddy / Kiro / Kimi / Hermes hooks，以及 opencode / OpenClaw plugin。手动安装命令主要用于调试、重装或远程部署。
 Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/guides/copilot-setup.md`。
 
 ## Read These Docs
@@ -92,10 +95,11 @@ Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/gui
 | `agents/registry.js` | agent 注册表 |
 | `agents/codex-log-monitor.js` | Codex JSONL 轮询 |
 | `agents/gemini-log-monitor.js` | Gemini session JSON 轮询 |
+| `agents/hermes.js` | Hermes shell hook 事件映射 |
 | `hooks/clawd-hook.js` + `hooks/copilot-hook.js` | Claude Code / Copilot CLI 状态上报脚本 |
 | `hooks/install.js` | Claude hook 注册 / 卸载 |
 | `hooks/auto-start.js` | Claude `SessionStart` 自动拉起 Clawd 的 hook |
-| `hooks/cursor-install.js` / `gemini-install.js` / `kiro-install.js` / `codebuddy-install.js` / `opencode-install.js` | 各 agent 集成安装逻辑 |
+| `hooks/cursor-install.js` / `gemini-install.js` / `kiro-install.js` / `kimi-install.js` / `hermes-install.js` / `codebuddy-install.js` / `opencode-install.js` / `openclaw-install.js` | 各 agent 集成安装逻辑 |
 | `hooks/codex-remote-monitor.js` | 远程 Codex JSONL 轮询并通过 SSH 隧道回传 |
 | `extensions/vscode/extension.js` | VS Code / Cursor 终端 tab 聚焦辅助扩展 |
 

@@ -385,6 +385,19 @@ function syncKimiHooks() {
   }
 }
 
+function syncHermesHooks() {
+  try {
+    if (typeof ctx.syncHermesHooksImpl === "function") return ctx.syncHermesHooksImpl();
+    const { registerHermesHooks } = require("../hooks/hermes-install.js");
+    const { added, updated } = registerHermesHooks({ silent: true });
+    if (added > 0 || updated > 0) {
+      console.log(`Clawd: synced Hermes hooks (added ${added}, updated ${updated})`);
+    }
+  } catch (err) {
+    console.warn("Clawd: failed to sync Hermes hooks:", err.message);
+  }
+}
+
 function syncCursorHooks() {
   try {
     if (typeof ctx.syncCursorHooksImpl === "function") return ctx.syncCursorHooksImpl();
@@ -912,6 +925,7 @@ function startHttpServer() {
       syncCodeBuddyHooks();
       syncKiroHooks();
       syncKimiHooks();
+      syncHermesHooks();
       syncOpencodePlugin();
       syncOpenClawPlugin();
     });
@@ -935,6 +949,7 @@ return {
   syncCodeBuddyHooks,
   syncKiroHooks,
   syncKimiHooks,
+  syncHermesHooks,
   syncOpencodePlugin,
   syncOpenClawPlugin,
   startClaudeSettingsWatcher,

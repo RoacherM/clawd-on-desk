@@ -8,7 +8,7 @@ describe("Agent Registry", () => {
     // Keep legacy count assertions stable while allowing Kimi to be added.
     const kimiIdx = agents.findIndex((a) => a.id === "kimi-cli");
     if (kimiIdx >= 0) agents.splice(kimiIdx, 1);
-    assert.strictEqual(agents.length, 9);
+    assert.strictEqual(agents.length, 10);
     const ids = agents.map((a) => a.id);
     assert.ok(ids.includes("claude-code"));
     assert.ok(ids.includes("codex"));
@@ -17,6 +17,7 @@ describe("Agent Registry", () => {
     assert.ok(ids.includes("cursor-agent"));
     assert.ok(ids.includes("codebuddy"));
     assert.ok(ids.includes("kiro-cli"));
+    assert.ok(ids.includes("hermes"));
     assert.ok(ids.includes("opencode"));
     assert.ok(ids.includes("openclaw"));
   });
@@ -29,6 +30,7 @@ describe("Agent Registry", () => {
     assert.strictEqual(registry.getAgent("cursor-agent").name, "Cursor Agent");
     assert.strictEqual(registry.getAgent("codebuddy").name, "CodeBuddy");
     assert.strictEqual(registry.getAgent("kiro-cli").name, "Kiro CLI");
+    assert.strictEqual(registry.getAgent("hermes").name, "Hermes");
     assert.strictEqual(registry.getAgent("openclaw").name, "OpenClaw");
     assert.strictEqual(registry.getAgent("nonexistent"), undefined);
   });
@@ -73,6 +75,9 @@ describe("Agent Registry", () => {
 
     const openclaw = registry.getAgent("openclaw");
     assert.deepStrictEqual(openclaw.processNames.linux, ["openclaw"]);
+
+    const hermes = registry.getAgent("hermes");
+    assert.deepStrictEqual(hermes.processNames.linux, ["hermes"]);
   });
 
   it("should keep Kiro CLI process names narrowed to kiro-cli only", () => {
@@ -94,6 +99,7 @@ describe("Agent Registry", () => {
     assert.ok(agentIds.includes("gemini-cli"));
     assert.ok(agentIds.includes("cursor-agent"));
     assert.ok(agentIds.includes("kiro-cli"));
+    assert.ok(agentIds.includes("hermes"));
     assert.ok(agentIds.includes("openclaw"));
   });
 
@@ -139,6 +145,13 @@ describe("Agent Registry", () => {
     assert.strictEqual(openclaw.capabilities.permissionApproval, false);
     assert.strictEqual(openclaw.capabilities.sessionEnd, true);
     assert.strictEqual(openclaw.capabilities.subagent, true);
+
+    const hermes = registry.getAgent("hermes");
+    assert.strictEqual(hermes.capabilities.httpHook, true);
+    assert.strictEqual(hermes.capabilities.permissionApproval, false);
+    assert.strictEqual(hermes.capabilities.notificationHook, true);
+    assert.strictEqual(hermes.capabilities.sessionEnd, true);
+    assert.strictEqual(hermes.capabilities.subagent, false);
   });
 
   it("should have eventMap for hook-based agents", () => {
@@ -168,6 +181,12 @@ describe("Agent Registry", () => {
     assert.strictEqual(openclaw.eventMap.UserPromptSubmit, "thinking");
     assert.strictEqual(openclaw.eventMap.PreToolUse, "working");
     assert.strictEqual(openclaw.eventMap.Stop, "attention");
+
+    const hermes = registry.getAgent("hermes");
+    assert.strictEqual(hermes.eventMap.on_session_start, "idle");
+    assert.strictEqual(hermes.eventMap.pre_llm_call, "thinking");
+    assert.strictEqual(hermes.eventMap.pre_tool_call, "working");
+    assert.strictEqual(hermes.eventMap.post_llm_call, "attention");
   });
 
   it("should have logEventMap for poll-based agents", () => {

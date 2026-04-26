@@ -5,6 +5,7 @@ function buildSettingsAgentOrderExports() {
     "claude-code",
     "codex",
     "kimi-cli",
+    "hermes",
     "opencode",
     "codebuddy",
   ];

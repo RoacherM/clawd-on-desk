@@ -8,6 +8,7 @@ const AGENT_LABELS = {
   "gemini-cli": "Gemini",
   "kiro-cli": "Kiro",
   "kimi-cli": "Kimi",
+  hermes: "Hermes",
   opencode: "opencode",
   codebuddy: "CodeBuddy",
 };

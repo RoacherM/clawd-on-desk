@@ -20,6 +20,8 @@
 
 **Kimi Code CLI (Kimi-CLI)** — hooks live in `~/.kimi/config.toml` (`[[hooks]]` entries). Clawd auto-registers them on launch when Kimi is installed, or you can run `npm run install:kimi-hooks` manually. Kimi is hook-only in Clawd: state updates and permission notifications come from hook events, not log polling. To make a permission-classification choice persist across restarts, set `CLAWD_KIMI_PERMISSION_MODE=explicit` (default) or `CLAWD_KIMI_PERMISSION_MODE=suspect` before running the installer — the value gets written into the `command` field for every Kimi hook so subsequent Clawd auto-syncs preserve it. Heads up: the auto-sync also rewrites the `command` field in-place if it diverges from the expected line, so manual edits to that field will be silently restored on the next launch.
 
+**Hermes** — hooks live in `~/.hermes/config.yaml` (`hooks:` entries). Clawd auto-registers them on launch when Hermes is installed, or you can run `npm run install:hermes-hooks` manually. Hermes is hook-only in Clawd: state updates come from shell hook events, while tool approvals remain in Hermes' own terminal/TUI. Hermes may ask you to approve the new shell hooks on first run; use `hermes hooks list` to inspect consent status.
+
 **opencode** — uses a plugin entry in `~/.config/opencode/opencode.json`. Clawd auto-registers it on launch when opencode is installed, or you can run `node hooks/opencode-install.js` manually.
 
 ## Remote SSH (Claude Code & Codex CLI)
@@ -114,6 +116,9 @@ node hooks/kiro-install.js
 
 # Kimi Code CLI (Kimi-CLI)
 node hooks/kimi-install.js
+
+# Hermes
+node hooks/hermes-install.js
 
 # Cursor Agent
 node hooks/cursor-install.js

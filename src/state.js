@@ -5,6 +5,7 @@ let screen, nativeImage;
 try { ({ screen, nativeImage } = require("electron")); } catch { screen = null; nativeImage = null; }
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const { pathToFileURL } = require("url");
 const { VISUAL_FALLBACK_STATES } = require("./theme-loader");
 const { sessionAliasKey } = require("./session-alias");
@@ -667,13 +668,57 @@ function getSessionAliasEntry(id, sessionLike, sessionAliases = {}) {
   return legacyAliasKey ? sessionAliases[legacyAliasKey] : null;
 }
 
+function trimTrailingPathSeparators(value) {
+  return typeof value === "string" ? value.replace(/[\\/]+$/g, "") : "";
+}
+
+function isUsefulCwdTitle(cwd) {
+  if (typeof cwd !== "string" || !cwd.trim()) return false;
+  const trimmed = cwd.trim();
+  const base = path.basename(trimmed);
+  if (!base || base === "." || base === path.sep) return false;
+  const home = os.homedir();
+  if (home && trimTrailingPathSeparators(trimmed) === trimTrailingPathSeparators(home)) return false;
+  return true;
+}
+
+function agentDisplayName(agentId) {
+  if (typeof agentId !== "string" || !agentId.trim()) return "";
+  try {
+    const registry = require("../agents/registry");
+    const agent = registry.getAgent(agentId);
+    if (agent && typeof agent.name === "string" && agent.name.trim()) return agent.name.trim();
+  } catch {}
+  return agentId.trim();
+}
+
+function compactSessionIdForTitle(id, agentId) {
+  if (id === null || id === undefined) return "";
+  let sessionId = String(id).trim();
+  if (!sessionId || sessionId === "default") return "";
+  if (typeof agentId === "string" && agentId && sessionId.startsWith(`${agentId}:`)) {
+    sessionId = sessionId.slice(agentId.length + 1);
+  }
+  if (!sessionId || sessionId === "default") return "";
+  return sessionId.length > 12 ? `${sessionId.slice(0, 12)}..` : sessionId;
+}
+
+function agentSessionDisplayTitle(id, sessionLike) {
+  const name = agentDisplayName(sessionLike && sessionLike.agentId);
+  if (!name) return "";
+  const compactId = compactSessionIdForTitle(id, sessionLike && sessionLike.agentId);
+  return compactId ? `${name} session ${compactId}` : `${name} session`;
+}
+
 function sessionDisplayTitle(id, sessionLike, sessionAliases = {}) {
   const alias = getSessionAliasEntry(id, sessionLike, sessionAliases);
   if (alias && typeof alias.title === "string" && alias.title) return alias.title;
   const title = normalizeTitle(sessionLike && sessionLike.sessionTitle);
   if (title) return title;
   const cwd = sessionLike && sessionLike.cwd;
-  if (cwd) return path.basename(cwd);
+  if (isUsefulCwdTitle(cwd)) return path.basename(cwd);
+  const agentTitle = agentSessionDisplayTitle(id, sessionLike);
+  if (agentTitle) return agentTitle;
   return id && id.length > 6 ? `${id.slice(0, 6)}..` : id;
 }
 
@@ -1251,12 +1296,12 @@ function detectRunningAgentProcesses(callback) {
   const { exec } = require("child_process");
   if (process.platform === "win32") {
     exec(
-      'wmic process where "(Name=\'node.exe\' and CommandLine like \'%claude-code%\') or Name=\'claude.exe\' or Name=\'codex.exe\' or Name=\'copilot.exe\' or Name=\'gemini.exe\' or Name=\'codebuddy.exe\' or Name=\'kiro-cli.exe\' or Name=\'kimi.exe\' or Name=\'opencode.exe\'" get ProcessId /format:csv',
+      'wmic process where "(Name=\'node.exe\' and CommandLine like \'%claude-code%\') or Name=\'claude.exe\' or Name=\'codex.exe\' or Name=\'copilot.exe\' or Name=\'gemini.exe\' or Name=\'codebuddy.exe\' or Name=\'kiro-cli.exe\' or Name=\'kimi.exe\' or Name=\'hermes.exe\' or Name=\'opencode.exe\'" get ProcessId /format:csv',
       { encoding: "utf8", timeout: 5000, windowsHide: true },
       (err, stdout) => done(!err && /\d+/.test(stdout))
     );
   } else {
-    exec("pgrep -f 'claude-code|codex|copilot|codebuddy|kimi' || pgrep -x 'gemini' || pgrep -x 'kiro-cli' || pgrep -x 'opencode'", { timeout: 3000 },
+    exec("pgrep -f 'claude-code|codex|copilot|codebuddy|kimi|hermes' || pgrep -x 'gemini' || pgrep -x 'kiro-cli' || pgrep -x 'opencode'", { timeout: 3000 },
       (err) => done(!err)
     );
   }

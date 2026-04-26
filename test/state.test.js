@@ -1,6 +1,7 @@
 // test/state.test.js — Unit tests for src/state.js core logic
 const { describe, it, beforeEach, afterEach, mock } = require("node:test");
 const assert = require("node:assert");
+const os = require("node:os");
 
 // Load default theme for test ctx
 const themeLoader = require("../src/theme-loader");
@@ -1013,6 +1014,30 @@ describe("buildSessionSnapshot", () => {
     assert.strictEqual(snapshot.hudTotalNonIdle, 1);
     assert.strictEqual(snapshot.hudLastSessionId, "done-local");
     assert.strictEqual(snapshot.hudLastTitle, "done-project");
+  });
+
+  it("falls back to agent session title instead of home-directory basename", () => {
+    api.sessions.set("hermes:sess-123", rawSession("working", {
+      updatedAt: 3000,
+      cwd: os.homedir(),
+      agentId: "hermes",
+    }));
+    api.sessions.set("openclaw:default", rawSession("working", {
+      updatedAt: 2000,
+      cwd: `${os.homedir()}/`,
+      agentId: "openclaw",
+    }));
+
+    const snapshot = api.buildSessionSnapshot();
+
+    assert.strictEqual(
+      snapshot.sessions.find((s) => s.id === "hermes:sess-123").displayTitle,
+      "Hermes session sess-123"
+    );
+    assert.strictEqual(
+      snapshot.sessions.find((s) => s.id === "openclaw:default").displayTitle,
+      "OpenClaw session"
+    );
   });
 
   it("applies session aliases to displayTitle without mutating raw session fields", () => {

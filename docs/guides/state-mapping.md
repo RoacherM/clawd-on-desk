@@ -40,6 +40,19 @@ Kimi Code CLI (Kimi-CLI) now uses hook-only integration (`~/.kimi/config.toml`),
 | PostCompact | attention |
 | Notification | notification |
 
+## Hermes Hook Events
+
+Hermes uses shell hooks in `~/.hermes/config.yaml`; Clawd maps the core lifecycle events to shared states:
+
+| Hermes Hook Event | State |
+|---|---|
+| on_session_start | idle |
+| on_session_end | sleeping |
+| pre_llm_call | thinking |
+| post_llm_call | attention |
+| pre_tool_call | working |
+| post_tool_call | working |
+
 ## Mini Mode
 
 Drag to the right screen edge (or right-click → "Mini Mode") to enter mini mode — half-body visible at screen edge, peeking out on hover.

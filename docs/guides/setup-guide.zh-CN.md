@@ -20,6 +20,8 @@
 
 **Kimi Code CLI（Kimi-CLI）** — hooks 配置在 `~/.kimi/config.toml`（`[[hooks]]` 条目）。如果本机已安装 Kimi，Clawd 启动时会自动注册；也可以手动执行 `npm run install:kimi-hooks`。在 Clawd 中 Kimi 采用 hook-only 集成：状态和权限提示都来自 hook 事件，不再依赖日志轮询。如果想让权限分类策略在重启后仍然生效，请在执行安装命令之前设置环境变量 `CLAWD_KIMI_PERMISSION_MODE=explicit`（默认）或 `CLAWD_KIMI_PERMISSION_MODE=suspect`，安装脚本会把这个值写进 `~/.kimi/config.toml` 中每条 Kimi hook 的 `command` 字段，后续 Clawd 自动同步也会保留它。注意：自动同步会按预期行重写 `command` 字段，所以你对该字段的手工修改会在下次启动时被静默还原。
 
+**Hermes** — hooks 配置在 `~/.hermes/config.yaml`（`hooks:` 条目）。如果本机已安装 Hermes，Clawd 启动时会自动注册；也可以手动执行 `npm run install:hermes-hooks`。在 Clawd 中 Hermes 采用 hook-only 集成：状态更新来自 shell hook 事件，工具审批仍在 Hermes 自己的终端 / TUI 中处理。Hermes 首次运行新增 shell hooks 时可能会要求你确认；可用 `hermes hooks list` 查看 allowlist 状态。
+
 **opencode** — 使用 `~/.config/opencode/opencode.json` 里的 plugin 配置。如果本机已安装 opencode，Clawd 启动时会自动注册；也可以手动执行 `node hooks/opencode-install.js`。
 
 ## 远程 SSH 模式（Claude Code & Codex CLI）
@@ -114,6 +116,9 @@ node hooks/kiro-install.js
 
 # Kimi Code CLI（Kimi-CLI）
 node hooks/kimi-install.js
+
+# Hermes
+node hooks/hermes-install.js
 
 # Cursor Agent
 node hooks/cursor-install.js

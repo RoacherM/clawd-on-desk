@@ -111,6 +111,7 @@ function makeServer(overrides = {}) {
     syncCursorHooksImpl: () => syncCalls.push("cursor"),
     syncCodeBuddyHooksImpl: () => syncCalls.push("codebuddy"),
     syncKiroHooksImpl: () => syncCalls.push("kiro"),
+    syncHermesHooksImpl: () => syncCalls.push("hermes"),
     syncOpencodePluginImpl: () => syncCalls.push("opencode"),
     syncOpenClawPluginImpl: () => syncCalls.push("openclaw"),
     ...overrides,
@@ -134,7 +135,7 @@ describe("server Claude hook management", () => {
 
     api.startHttpServer();
 
-    assert.deepStrictEqual(syncCalls, ["claude", "gemini", "cursor", "codebuddy", "kiro", "opencode", "openclaw"]);
+    assert.deepStrictEqual(syncCalls, ["claude", "gemini", "cursor", "codebuddy", "kiro", "hermes", "opencode", "openclaw"]);
     assert.ok(getWatcher(), "watcher should start when management is enabled");
   });
 
@@ -145,7 +146,7 @@ describe("server Claude hook management", () => {
 
     api.startHttpServer();
 
-    assert.deepStrictEqual(syncCalls, ["gemini", "cursor", "codebuddy", "kiro", "opencode", "openclaw"]);
+    assert.deepStrictEqual(syncCalls, ["gemini", "cursor", "codebuddy", "kiro", "hermes", "opencode", "openclaw"]);
     assert.strictEqual(getWatcher(), null);
   });
 
@@ -240,7 +241,7 @@ describe("server Claude hook management", () => {
     const second = makeServer({ manageClaudeHooksAutomatically: false });
     second.api.startHttpServer();
 
-    assert.deepStrictEqual(first.syncCalls, ["gemini", "cursor", "codebuddy", "kiro", "opencode", "openclaw"]);
-    assert.deepStrictEqual(second.syncCalls, ["gemini", "cursor", "codebuddy", "kiro", "opencode", "openclaw"]);
+    assert.deepStrictEqual(first.syncCalls, ["gemini", "cursor", "codebuddy", "kiro", "hermes", "opencode", "openclaw"]);
+    assert.deepStrictEqual(second.syncCalls, ["gemini", "cursor", "codebuddy", "kiro", "hermes", "opencode", "openclaw"]);
   });
 });

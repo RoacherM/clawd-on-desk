@@ -141,6 +141,28 @@ describe("Hermes hook installer", () => {
     assert.ok(read(configPath).includes("/home/user/.nvm/versions/node/v22/bin/node"));
   });
 
+  it("preserves an existing Clawd node path during startup sync", () => {
+    const { configPath } = makeHermesConfig();
+
+    registerHermesHooks({
+      silent: true,
+      configPath,
+      nodeBin: "/opt/homebrew/Cellar/node/25.8.0/bin/node",
+    });
+    const before = read(configPath);
+
+    const result = registerHermesHooks({
+      silent: true,
+      configPath,
+      nodeBin: "/opt/homebrew/bin/node",
+    });
+
+    assert.deepStrictEqual(result, { added: 0, skipped: HERMES_HOOK_EVENTS.length, updated: 0 });
+    assert.strictEqual(read(configPath), before);
+    assert.ok(read(configPath).includes("/opt/homebrew/Cellar/node/25.8.0/bin/node"));
+    assert.ok(!read(configPath).includes("/opt/homebrew/bin/node"));
+  });
+
   it("skips when ~/.hermes does not exist", () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "clawd-hermes-missing-"));
     tempDirs.push(root);

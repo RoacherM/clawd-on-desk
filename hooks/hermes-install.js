@@ -148,6 +148,19 @@ function hasDesiredHooks(content, command) {
   return countMarkerCommands(content) === HERMES_HOOK_EVENTS.length;
 }
 
+function hasCurrentHookScript(content, hookScript) {
+  const lines = splitLines(content);
+  const range = findHooksRange(lines);
+  if (!range) return false;
+  for (const event of HERMES_HOOK_EVENTS) {
+    const eventRange = findEventRange(lines, range, event);
+    if (!eventRange) return false;
+    const block = lines.slice(eventRange.start, eventRange.end).join("\n");
+    if (!block.includes(MARKER) || !block.includes(hookScript)) return false;
+  }
+  return countMarkerCommands(content) === HERMES_HOOK_EVENTS.length;
+}
+
 function extractExistingNodeBin(content) {
   const raw = String(content || "");
   const commandLineRe = /^\s*(?:-\s*)?command\s*:\s*(.+)$/gm;
@@ -204,7 +217,10 @@ function registerHermesHooks(options = {}) {
 
   const hookScript = asarUnpackedPath(path.resolve(__dirname, "hermes-hook.js").replace(/\\/g, "/"));
   const resolved = options.nodeBin !== undefined ? options.nodeBin : resolveNodeBin();
-  const nodeBin = resolved || extractExistingNodeBin(content) || "node";
+  const existingNodeBin = extractExistingNodeBin(content);
+  const nodeBin = existingNodeBin && hasCurrentHookScript(content, hookScript)
+    ? existingNodeBin
+    : resolved || existingNodeBin || "node";
   const desiredCommand = `"${nodeBin}" "${hookScript}"`;
 
   if (hasDesiredHooks(content, desiredCommand)) {

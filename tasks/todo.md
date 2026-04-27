@@ -33,3 +33,17 @@ Clawd's core extension point is the normalized `/state` contract:
 `{ state, event, session_id, agent_id, cwd?, source_pid?, display_svg? }`.
 Any external agent can integrate if it can emit lifecycle events to localhost
 or provide a small bridge/plugin that maps its native events into this contract.
+
+---
+
+# Miexiaomie Asset Import
+
+- [x] Locate the downloaded miexiaomie folder on Desktop.
+- [x] Move the folder into the repository root without modifying image contents.
+- [x] Verify the imported files and working tree state.
+
+## Review
+
+Imported `/Users/byron/Desktop/Docs/miexiaomie_png` to repository root as
+`miexiaomie_png/`. The source Desktop folder is gone after the move. The import
+contains 11 PNG files, all reported as 1254 x 1254 RGB PNG images.
